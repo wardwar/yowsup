@@ -15,7 +15,7 @@ class OutgoingAckProtocolEntity(AckProtocolEntity):
         self.setOutgoingData(_type, to, participant)
 
     def setOutgoingData(self, _type, _to, _participant):
-        self._type = _type
+        self._type = _type if _type is not None else ""
         self._to = _to
         self._participant = _participant
 
