@@ -3,6 +3,7 @@ from yowsup.layers.network import YowNetworkLayer
 from .encoder import WriteEncoder
 from .decoder import ReadDecoder
 from .tokendictionary import TokenDictionary
+import logging
 class YowCoderLayer(YowLayer):
 
     PROP_DOMAIN =   "org.openwhatsapp.yowsup.prop.domain"
@@ -32,6 +33,9 @@ class YowCoderLayer(YowLayer):
     def receive(self, data):
         node = self.reader.getProtocolTreeNode(data)
         if node:
+            logging.debug("Ready to Upper Layer")
+            logging.debug(node)
+            logging.debug("-------------------------")
             self.toUpper(node)
 
     def write(self, i):

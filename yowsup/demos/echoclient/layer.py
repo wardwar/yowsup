@@ -1,4 +1,5 @@
-from yowsup.layers.interface                           import YowInterfaceLayer, ProtocolEntityCallback
+from yowsup.layers.interface import YowInterfaceLayer, ProtocolEntityCallback
+import logging
 
 class EchoLayer(YowInterfaceLayer):
 

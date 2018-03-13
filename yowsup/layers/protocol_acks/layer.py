@@ -1,5 +1,6 @@
 from yowsup.layers import YowProtocolLayer
-from .protocolentities import * 
+from .protocolentities import *
+import logging
 class YowAckProtocolLayer(YowProtocolLayer):
     def __init__(self):
         handleMap = {
@@ -14,4 +15,5 @@ class YowAckProtocolLayer(YowProtocolLayer):
         self.entityToLower(entity)
 
     def recvAckNode(self, node):
+        logging.debug(node)
         self.toUpper(IncomingAckProtocolEntity.fromProtocolTreeNode(node))

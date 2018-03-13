@@ -231,7 +231,7 @@ class YowLayerTest(unittest.TestCase):
         self.upperEventSink = []
         self.lowerEventSink = []
         self.emitEvent = self.emitEventOverrider
-        self.broadcastEvent = self.broadcastEventOverrider
+        self.broadcastEvent = self.broadcastEventlOverrider
 
     def receiveOverrider(self, data):
         self.upperSink.append(data)

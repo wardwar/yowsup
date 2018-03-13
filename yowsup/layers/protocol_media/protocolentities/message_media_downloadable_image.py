@@ -79,7 +79,6 @@ class ImageDownloadableMediaMessageProtocolEntity(DownloadableMediaMessageProtoc
         image_message.jpeg_thumbnail = self.preview
         image_message.media_key = self.mediaKey
 
-
         return image_message
 
     @staticmethod

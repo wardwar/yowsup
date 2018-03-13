@@ -27,7 +27,10 @@ class RequestUploadIqProtocolEntity(IqProtocolEntity):
         if filePath:
             assert os.path.exists(filePath), "Either specified path does not exist, or yowsup doesn't have permission to read: %s" % filePath
             b64Hash = self.__class__.getFileHashForUpload(filePath)
+
             size = os.path.getsize(filePath)
+
+
         self.setRequestArguments(mediaType, b64Hash, size, origHash)
 
     def setRequestArguments(self, mediaType, b64Hash, size, origHash = None):
@@ -59,7 +62,7 @@ class RequestUploadIqProtocolEntity(IqProtocolEntity):
         }
         if self.origHash:
             attribs["orighash"] = self.origHash
-        mediaNode = ProtocolTreeNode("encr_media", attribs)
+        mediaNode = ProtocolTreeNode("media", attribs)
         node.addChild(mediaNode)
         return node
 
@@ -68,7 +71,7 @@ class RequestUploadIqProtocolEntity(IqProtocolEntity):
         assert node.getAttributeValue("type") == "set", "Expected set as iq type in request upload, got %s" % node.getAttributeValue("type")
         entity = IqProtocolEntity.fromProtocolTreeNode(node)
         entity.__class__ = RequestUploadIqProtocolEntity
-        mediaNode = node.getChild("encr_media")
+        mediaNode = node.getChild("media")
         entity.setRequestArguments(
             mediaNode.getAttributeValue("type"),
             mediaNode.getAttributeValue("hash"),

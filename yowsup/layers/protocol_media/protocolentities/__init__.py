@@ -7,3 +7,4 @@ from .message_media_location import LocationMediaMessageProtocolEntity
 from .message_media_vcard import VCardMediaMessageProtocolEntity
 from .iq_requestupload import RequestUploadIqProtocolEntity
 from .iq_requestupload_result import ResultRequestUploadIqProtocolEntity
+from .message_media_downloadable_document import DocumentDownloadableMediaMessageProtocolEntity

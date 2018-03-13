@@ -34,6 +34,9 @@ class AxolotlControlLayer(AxolotlBaseLayer):
         self.toLower(node)
 
     def receive(self, protocolTreeNode):
+        logger.debug("LAYER AXOLOT CONTROL")
+        logger.debug(protocolTreeNode)
+        logger.debug("----------------------")
         """
         :type protocolTreeNode: ProtocolTreeNode
         """

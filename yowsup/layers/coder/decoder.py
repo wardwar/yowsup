@@ -2,6 +2,8 @@ from yowsup.structs import ProtocolTreeNode
 import math
 import binascii
 import sys
+import logging
+logger = logging.getLogger(__name__)
 class ReadDecoder:
     def __init__(self, tokenDictionary):
         self.streamStarted = False;
@@ -11,8 +13,12 @@ class ReadDecoder:
         self.streamStarted = False
 
     def getProtocolTreeNode(self, data):
+        logger.debug("GET PROTOCOL TREE NODE FROM DECODER")
+        logger.debug(self)
+        logger.debug(data)
+        logger.debug("-------------------------")
         if not self.streamStarted:
-            return self.streamStart(data)
+             return self.streamStart(data)
         return self.nextTreeInternal(data)
 
     def getToken(self, index, data):
@@ -45,6 +51,10 @@ class ReadDecoder:
             token = self.getToken(tag, data)#self.tokenDictionary.getToken(tag)
             raise Exception("expecting STREAM_START in streamStart, instead got token: %s" % token)
         attribCount = (size - 2 + size % 2) / 2
+        logger.debug("DECODER")
+        logger.debug(attribCount)
+        logger.debug(data)
+        logger.debug("-------------------------")
         self.readAttributes(attribCount, data)
 
     def readNibble(self, data):
@@ -173,6 +183,9 @@ class ReadDecoder:
             key = self.readString(self.readInt8(data), data)
             value = self.readString(self.readInt8(data), data)
             attribs[key]=value
+        logger.debug("DECODER ATTR")
+        logger.debug(attribs)
+        logger.debug("-------------------------")
         return attribs
 
     def readString(self,token, data):
@@ -228,6 +241,13 @@ class ReadDecoder:
     def nextTreeInternal(self, data):
         size = self.readListSize(self.readInt8(data), data)
         token = self.readInt8(data)
+
+        logger.debug("SIZE ATTRIB")
+        logger.debug("data "+str(data))
+        logger.debug("size "+str(size))
+        logger.debug("size mod "+str(size % 2))
+        logger.debug("token "+str(token))
+
         if token == 1:
             token = self.readInt8(data)
 
@@ -236,12 +256,21 @@ class ReadDecoder:
 
         tag = self.readString(token, data)
 
+        logger.debug("token after "+str(token))
+        logger.debug("tag "+str(tag))
+        logger.debug("-------------------------")
+
         if size == 0 or tag is None:
             raise ValueError("nextTree sees 0 list or null tag")
+
 
         attribCount = (size - 2 + size % 2)/2
         attribs = self.readAttributes(attribCount, data)
         if size % 2 ==1:
+            logger.debug("DECODER size % 2 == 1")
+            logger.debug(tag)
+            logger.debug(attribs)
+            logger.debug("-------------------------")
             return ProtocolTreeNode(tag, attribs)
 
         read2 = self.readInt8(data)
@@ -266,6 +295,13 @@ class ReadDecoder:
 
         if nodeData and type(nodeData) is not str:
             nodeData = "".join(map(chr, nodeData))
+
+        logger.debug("DECODER PROTOCOL TREE NODE")
+        logger.debug(tag)
+        logger.debug(attribs)
+        logger.debug(nodeChildren)
+        logger.debug(nodeData)
+        logger.debug("-------------------------")
 
         return ProtocolTreeNode(tag, attribs, nodeChildren, nodeData)
 

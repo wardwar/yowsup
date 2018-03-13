@@ -6,7 +6,7 @@ class AckProtocolEntity(ProtocolEntity):
     </ack>
     '''
 
-    def __init__(self, _id, _class):
+    def __init__(self, _id,_class=None):
         super(AckProtocolEntity, self).__init__("ack")
         self._id = _id
         self._class = _class
@@ -19,10 +19,9 @@ class AckProtocolEntity(ProtocolEntity):
     
     def toProtocolTreeNode(self):
         attribs = {
-            "id"           : self._id,
-            "class"        : self._class,
+                "id": self._id,
+                "class": self._class
         }
-
         return self._createProtocolTreeNode(attribs, None, data = None)
 
     def __str__(self):
@@ -35,5 +34,4 @@ class AckProtocolEntity(ProtocolEntity):
     def fromProtocolTreeNode(node):
         return AckProtocolEntity(
             node.getAttributeValue("id"),
-            node.getAttributeValue("class")
-            )
+            node.getAttributeValue("class"))

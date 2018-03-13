@@ -96,7 +96,8 @@ class MediaMessageProtocolEntity(MessageProtocolEntity):
     MEDIA_TYPE_AUDIO = "audio"
     MEDIA_TYPE_VCARD = "vcard"
     MEDIA_TYPE_LOCATION = "location"
-    TYPES_MEDIA = (MEDIA_TYPE_AUDIO, MEDIA_TYPE_IMAGE, MEDIA_TYPE_VIDEO, MEDIA_TYPE_VCARD, MEDIA_TYPE_LOCATION)
+    MEDIA_TYPE_DOCUMENT = "document"
+    TYPES_MEDIA = (MEDIA_TYPE_AUDIO, MEDIA_TYPE_IMAGE, MEDIA_TYPE_VIDEO, MEDIA_TYPE_VCARD, MEDIA_TYPE_LOCATION, MEDIA_TYPE_DOCUMENT)
 
     def __init__(self, mediaType, _id = None, _from = None, to = None, notify = None, timestamp = None, participant = None, preview = None, offline = None, retry = None):
         super(MediaMessageProtocolEntity, self).__init__("media", _id, _from, to, notify, timestamp, participant, offline, retry)
@@ -125,7 +126,6 @@ class MediaMessageProtocolEntity(MessageProtocolEntity):
     def toProtocolTreeNode(self):
         node = super(MediaMessageProtocolEntity, self).toProtocolTreeNode()
         mediaNode = ProtocolTreeNode("media", {"type": self.mediaType}, None, None)
-
         node.addChild(mediaNode)
         if self.preview:
             mediaNode.setData(self.preview)

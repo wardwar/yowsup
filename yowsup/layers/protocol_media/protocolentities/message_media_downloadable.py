@@ -10,29 +10,22 @@ except ImportError:
 from axolotl.kdf.hkdfv3 import HKDFv3
 from axolotl.util.byteutil import ByteUtil
 import binascii
-import base64
-#import logging
 class DownloadableMediaMessageProtocolEntity(MediaMessageProtocolEntity):
     '''
-        <message t="{{TIME_STAMP}}" from="{{CONTACT_JID}}"
-            offline="{{OFFLINE}}" type="text" id="{{MESSAGE_ID}}" notify="{{NOTIFY_NAME}}">
-            <media type="{{DOWNLOADABLE_MEDIA_TYPE: (image | audio | video)}}"
-                mimetype="{{MIME_TYPE}}"
-                filehash="{{FILE_HASH}}"
-                url="{{DOWNLOAD_URL}}"
-                ip="{{IP}}"
-                size="{{MEDIA SIZE}}"
-                file="{{FILENAME}}"
+    <message t="{{TIME_STAMP}}" from="{{CONTACT_JID}}"
+        offline="{{OFFLINE}}" type="text" id="{{MESSAGE_ID}}" notify="{{NOTIFY_NAME}}">
+        <media type="{{DOWNLOADABLE_MEDIA_TYPE: (image | audio | video)}}"
+            mimetype="{{MIME_TYPE}}"
+            filehash="{{FILE_HASH}}"
+            url="{{DOWNLOAD_URL}}"
+            ip="{{IP}}"
+            size="{{MEDIA SIZE}}"
+            file="{{FILENAME}}"
 
-                > {{THUMBNAIL_RAWDATA (JPEG?)}}
-            </media>
-        </message>
-        '''
-    AUDIO_KEY = "576861747341707020417564696f204b657973"
-    VIDEO_KEY = "576861747341707020566964656f204b657973"
-    IMAGE_KEY = "576861747341707020496d616765204b657973"
-    DOCUMENT_KEY = "576861747341707020446f63756d656e74204b657973"
-
+            > {{THUMBNAIL_RAWDATA (JPEG?)}}
+        </media>
+    </message>
+    '''
     def __init__(self, mediaType,
             mimeType, fileHash, url, ip, size, fileName, mediaKey = None,
             _id = None, _from = None, to = None, notify = None, timestamp = None,
@@ -49,7 +42,6 @@ class DownloadableMediaMessageProtocolEntity(MediaMessageProtocolEntity):
         out += "IP: %s\n" % self.ip
         out += "File Size: %s\n" % self.size
         out += "File name: %s\n" % self.fileName
-        out += "File %s encrypted\n" % "is" if self.isEncrypted() else "is NOT"
         return out
 
     def decrypt(self, encimg, refkey):
@@ -58,8 +50,8 @@ class DownloadableMediaMessageProtocolEntity(MediaMessageProtocolEntity):
         iv = parts[0]
         cipherKey = parts[1]
         e_img = encimg[:-10]
-        AES.key_size=128
-        cr_obj = AES.new(key=cipherKey,mode=AES.MODE_CBC,IV=iv)
+        AES.key_size = 128
+        cr_obj = AES.new(key=cipherKey, mode=AES.MODE_CBC, IV=iv)
         return cr_obj.decrypt(e_img)
 
     def isEncrypted(self):
@@ -88,23 +80,19 @@ class DownloadableMediaMessageProtocolEntity(MediaMessageProtocolEntity):
         self.size       = int(size)
         self.fileName   = fileName
         self.mediaKey   = mediaKey
-        self.cryptKeys  = None
-
 
     def toProtocolTreeNode(self):
         node = super(DownloadableMediaMessageProtocolEntity, self).toProtocolTreeNode()
         mediaNode = node.getChild("media")
-        mediaNode.setAttribute("mimetype", self.mimeType)
-        mediaNode.setAttribute("filehash", self.fileHash)
-        mediaNode.setAttribute("url", self.url["url"].encode())
+        mediaNode.setAttribute("mimetype",  self.mimeType)
+        mediaNode.setAttribute("filehash",  self.fileHash)
+        mediaNode.setAttribute("url",       self.url)
         if self.ip:
-            mediaNode.setAttribute("ip", self.ip)
-        mediaNode.setAttribute("size", str(self.size))
-        mediaNode.setAttribute("file", self.fileName)
-
-        mediaNode.setAttribute("mediakey", self.url["mediaKey"])
-        mediaNode.setAttribute("anu", self.url["mediaKey"])
-        mediaNode.setAttribute("file_enc_sha256", self.url["file_enc_sha256"])
+            mediaNode.setAttribute("ip",        self.ip)
+        mediaNode.setAttribute("size",      str(self.size))
+        mediaNode.setAttribute("file",      self.fileName)
+        if self.mediaKey:
+            mediaNode.setAttribute("mediakey", self.mediaKey)
 
         return node
 
@@ -132,16 +120,8 @@ class DownloadableMediaMessageProtocolEntity(MediaMessageProtocolEntity):
         url = builder.get("url")
         ip = builder.get("ip")
         assert url, "Url is required"
-        mimeType = builder.get("mimetype", MimeTools.getMIME(builder.getOriginalFilepath()))
-        filehash = WATools.getFileHashForUpload2(builder.getFilepath())
+        mimeType = builder.get("mimetype", MimeTools.getMIME(builder.getOriginalFilepath())[0])
+        filehash = WATools.getFileHashForUpload(builder.getFilepath())
         size = os.path.getsize(builder.getFilepath())
         fileName = os.path.basename(builder.getFilepath())
         return DownloadableMediaMessageProtocolEntity(builder.mediaType, mimeType, filehash, url, ip, size, fileName, to = builder.jid, preview = builder.get("preview"))
-
-    @staticmethod
-    def fromFilePath(fpath, url, mediaType, ip, to, mimeType=None, preview=None, filehash=None, filesize=None):
-         mimeType = mimeType or MimeTools.getMIME(fpath)
-         filehash = filehash or WATools.getFileHashForUpload2(fpath)
-         size = filesize or os.path.getsize(fpath)
-         fileName = os.path.basename(fpath)
-         return DownloadableMediaMessageProtocolEntity(mediaType, mimeType, filehash, url, ip, size, fileName, to=to, preview=preview)
