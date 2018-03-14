@@ -47,6 +47,15 @@ class WATools:
         b64Hash = base64.b64encode(sha1.digest())
         return b64Hash if type(b64Hash) is str else b64Hash.decode()
 
+    def getFileHashForUpload2(filePath):
+        sha1 = hashlib.sha256()
+        f = open(filePath, 'rb')
+        try:
+            hash = hashlib.sha256(f.read()).hexdigest()
+        finally:
+            f.close()
+        return hash
+
 class StorageTools:
     @staticmethod
     def constructPath(*path):
